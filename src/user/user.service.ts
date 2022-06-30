@@ -34,7 +34,7 @@ export class UserService {
   async login(loginData: { email: string; password: string }) {
     const user = await this.User.findOne({
       email: loginData.email,
-    });
+    }).populate('tasks');
     if (
       user === null ||
       !this.bcrypt.compare(loginData.password, user.password)
@@ -53,7 +53,7 @@ export class UserService {
         token.substring(7)
       ) as JwtPayload;
       if (typeof tokenData === 'string') throw new UnauthorizedException();
-      const user = await this.User.findById(tokenData.id);
+      const user = await this.User.findById(tokenData.id).populate('tasks');
       if (user === null) throw new NotFoundException('User does not exist.');
       const newToken = this.auth.createToken(user.id);
       return {

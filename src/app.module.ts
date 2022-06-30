@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module, RequestMethod } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
 import { AppController } from './app.controller';
@@ -7,6 +7,7 @@ import { TaskModule } from './task/task.module';
 import { UserModule } from './user/user.module';
 import { AuthService } from './auth/auth.service';
 import { BcryptService } from './auth/bcrypt.service';
+import { AuthMiddleware } from './middlewares/auth.middleware';
 
 @Module({
   imports: [
@@ -26,4 +27,11 @@ import { BcryptService } from './auth/bcrypt.service';
   controllers: [AppController],
   providers: [AppService, AuthService, BcryptService],
 })
-export class AppModule {}
+export class AppModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer
+      .apply(AuthMiddleware)
+      .exclude({ path: 'user', method: RequestMethod.POST })
+      .forRoutes('*');
+  }
+}
