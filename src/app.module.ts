@@ -6,6 +6,7 @@ import { AppService } from './app.service';
 import { TaskModule } from './task/task.module';
 import { UserModule } from './user/user.module';
 import { AuthService } from './auth/auth.service';
+import { BcryptService } from './auth/bcrypt/bcrypt.service';
 
 @Module({
   imports: [
@@ -23,6 +24,6 @@ import { AuthService } from './auth/auth.service';
     UserModule,
   ],
   controllers: [AppController],
-  providers: [AppService, AuthService],
+  providers: [AppService, AuthService, BcryptService],
 })
 export class AppModule {}
