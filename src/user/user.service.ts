@@ -1,6 +1,5 @@
 import {
   Injectable,
-  Logger,
   NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
@@ -36,8 +35,10 @@ export class UserService {
     const user = await this.User.findOne({
       email: loginData.email,
     });
-    if (user === null) throw new NotFoundException('User does not exist.');
-    if (!this.bcrypt.compare(loginData.password, user.password))
+    if (
+      user === null ||
+      !this.bcrypt.compare(loginData.password, user.password)
+    )
       throw new UnauthorizedException('Password or email iconrrect.');
     const token = this.auth.createToken(user.id);
     return {
@@ -47,15 +48,21 @@ export class UserService {
   }
 
   async loginWithToken(token: string) {
-    const tokenData = this.auth.validateToken(token.substring(7)) as JwtPayload;
-    const user = await this.User.findById(tokenData.id);
-    if (user === null) throw new NotFoundException('User does not exist.');
-    const newToken = this.auth.createToken(user.id);
-    console.log(user);
-    return {
-      user,
-      token: newToken,
-    };
+    try {
+      const tokenData = this.auth.validateToken(
+        token.substring(7)
+      ) as JwtPayload;
+      if (typeof tokenData === 'string') throw new UnauthorizedException();
+      const user = await this.User.findById(tokenData.id);
+      if (user === null) throw new NotFoundException('User does not exist.');
+      const newToken = this.auth.createToken(user.id);
+      return {
+        user,
+        token: newToken,
+      };
+    } catch (ex) {
+      throw new UnauthorizedException('Session expired');
+    }
   }
 
   findAll() {
