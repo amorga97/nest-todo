@@ -11,6 +11,7 @@ export const userSchema = new Schema({
     type: String,
     required: true,
     validate: [isEmail, 'Provided email is not valid.'],
+    unique: true,
   },
   password: { type: String, minlength: 5 },
 });

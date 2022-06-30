@@ -22,11 +22,15 @@ export class UserController {
   }
 
   @Post('login')
-  login(
+  async login(
     @Body() loginData: { email: string; password: string },
     @Headers('Authorization') token: string
   ) {
-    return this.userService.login(loginData);
+    console.log(token);
+    if (token) {
+      return await this.userService.loginWithToken(token);
+    }
+    return await this.userService.login(loginData);
   }
 
   @Get()

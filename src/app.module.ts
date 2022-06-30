@@ -6,7 +6,7 @@ import { AppService } from './app.service';
 import { TaskModule } from './task/task.module';
 import { UserModule } from './user/user.module';
 import { AuthService } from './auth/auth.service';
-import { BcryptService } from './auth/bcrypt/bcrypt.service';
+import { BcryptService } from './auth/bcrypt.service';
 
 @Module({
   imports: [
